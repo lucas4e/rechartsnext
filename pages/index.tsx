@@ -3,15 +3,21 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
-import { Episode, SeriesData, TVMazeRes } from './_types';
+import { CustomChartProps, Episode, SeriesData, TVMazeRes } from './_types';
 
 function App() {
   const [query, setQuery] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
+  const [showRadar, setShowRadar] = React.useState(false);
   const [data, setData] = React.useState<TVMazeRes>();
   const inputRef = React.useRef(null);
 
@@ -24,11 +30,13 @@ function App() {
           body: `https://api.tvmaze.com/singlesearch/shows?q=${inputRef.current.value}&embed=episodes`,
         })
           .then(res => {
-            if (res.status === 200) setQuery('');
+            if (res.status === 200) {
+              inputRef.current.value = '';
+              setError('');
+            }
             return res.json();
           })
           .then(data => {
-            inputRef.current.value = '';
             setData(data);
           });
       } catch (e: any) {
@@ -64,6 +72,50 @@ function App() {
     return { distinctSeasons, seasonsArray };
   }
 
+  const CustomLineChart = (props: CustomChartProps) => {
+    return (
+      <LineChart width={props.width} height={props.height} data={props.data}>
+        <CartesianGrid strokeDasharray='3 3' />
+        <XAxis dataKey='season' />
+        <YAxis type='number' domain={[0, 10]} />
+        <Tooltip
+          labelFormatter={value => {
+            return `Season ${value}`;
+          }}
+        />
+        <Line
+          name='Average Rating'
+          type='monotone'
+          dataKey='rating'
+          stroke={props.color}
+          activeDot={{ r: 8 }}
+        />
+      </LineChart>
+    );
+  };
+
+  const CustomRadarChart = (props: CustomChartProps) => {
+    return (
+      <RadarChart width={props.width} height={props.height} data={props.data}>
+        <PolarGrid />
+        <PolarAngleAxis dataKey='season' />
+        <PolarRadiusAxis domain={[0, 10]} />
+        <Tooltip
+          labelFormatter={value => {
+            return `Season ${value}`;
+          }}
+        />
+        <Radar
+          name='Average Rating'
+          dataKey='rating'
+          stroke={props.color}
+          fill={props.color}
+          fillOpacity={0.6}
+        />
+      </RadarChart>
+    );
+  };
+
   function RenderChart({ series_data }: SeriesData) {
     if (!series_data) return <></>;
 
@@ -72,6 +124,14 @@ function App() {
     );
 
     const data = seasonsArray.map((s, i) => ({ season: i + 1, rating: s }));
+
+    if (distinctSeasons <= 2) {
+      return <p>This show has too few seasons to render a chart</p>;
+    }
+
+    if (error) {
+      return <p>{error}</p>;
+    }
 
     return (
       <div
@@ -82,28 +142,24 @@ function App() {
         }}
       >
         <p>{series_data.name}</p>
-        <LineChart
-          width={1000}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray='3 3' />
-          <XAxis dataKey='season' />
-          <YAxis type='number' domain={[0, 10]} />
-          <Tooltip />
-          <Line
-            type='monotone'
-            dataKey='rating'
-            stroke='#8884d8'
-            activeDot={{ r: 8 }}
+        <button onClick={() => setShowRadar(!showRadar)}>
+          {showRadar ? 'Line Chart' : 'Radar Chart'}
+        </button>
+        {showRadar ? (
+          <CustomRadarChart
+            width={500}
+            height={500}
+            data={data}
+            color='#8884d8'
           />
-        </LineChart>
+        ) : (
+          <CustomLineChart
+            width={1100}
+            height={300}
+            data={data}
+            color='#8884d8'
+          />
+        )}
       </div>
     );
   }

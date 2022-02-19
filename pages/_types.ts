@@ -110,3 +110,10 @@ export interface Schedule {
   time: Time;
   days: string[];
 }
+
+export interface CustomChartProps {
+  data: any;
+  width: number;
+  height: number;
+  color: string;
+}
