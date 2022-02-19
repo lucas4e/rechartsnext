@@ -12,7 +12,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { CustomChartProps, Episode, SeriesData, TVMazeRes } from './_types';
+import {
+  CustomChartProps,
+  Episode,
+  SeriesData,
+  TVMazeRes,
+} from '../models/types';
 
 function App() {
   const [query, setQuery] = React.useState<string>('');

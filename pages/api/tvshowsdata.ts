@@ -1,6 +1,6 @@
-import { TVMazeRes } from './../_types';
+import { TVMazeRes } from '../../models/types';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { HttpResponse } from '../_types';
+import { HttpResponse } from '../../models/types';
 
 export default async function handler(
   req: NextApiRequest,
