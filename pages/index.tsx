@@ -19,7 +19,7 @@ function App() {
   const [error, setError] = React.useState<string>('');
   const [showRadar, setShowRadar] = React.useState(false);
   const [data, setData] = React.useState<TVMazeRes>();
-  const inputRef = React.useRef(null);
+  const inputRef = React.useRef<any>('');
 
   const handleSubmit = React.useCallback(
     async (e: React.SyntheticEvent) => {
@@ -60,10 +60,11 @@ function App() {
       .map(s => {
         return s[1];
       })
-      .map(season => {
+      .map((season: any) => {
         return (
           Math.round(
-            (season.reduce((a, b) => a + b.rating.average, 0) / season.length) *
+            (season.reduce((a: number, b: Episode) => a + b.rating.average, 0) /
+              season.length) *
               100
           ) / 100
         );
