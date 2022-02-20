@@ -19,6 +19,7 @@ import {
   SeriesData,
   TVMazeRes,
 } from '../models/types';
+import Image from 'next/image';
 
 function App() {
   const [error, setError] = React.useState<string | null>(null);
@@ -171,35 +172,47 @@ function App() {
   }
 
   return (
-    <div
-      className='App'
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '50px',
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <>
+      <div style={{ opacity: 0.5, cursor: 'pointer' }}>
+        <a href='https://github.com/lucasersson/rechartsnext'>
+          <Image
+            src='https://cdn-icons-png.flaticon.com/512/25/25231.png'
+            alt='github'
+            width={30}
+            height={30}
+          />
+        </a>
+      </div>
+      <div
+        className='App'
         style={{
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'center',
           alignItems: 'center',
+          marginTop: '50px',
         }}
       >
-        <h1>TV Shows Rating Guide</h1>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <h1>TV Shows Rating Guide</h1>
 
-        <input ref={inputRef} type='text' style={{ width: '350px' }}></input>
-        <button type='submit' style={{ width: '100px', marginTop: '10px' }}>
-          Submit
-        </button>
-      </form>
-      <div style={{ marginTop: '50px' }}>
-        <RenderChart series_data={data} />
+          <input ref={inputRef} type='text' style={{ width: '350px' }}></input>
+          <button type='submit' style={{ width: '100px', marginTop: '10px' }}>
+            Submit
+          </button>
+        </form>
+        <div style={{ marginTop: '50px' }}>
+          <RenderChart series_data={data} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
