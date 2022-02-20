@@ -131,7 +131,7 @@ function App() {
 
     const data = seasonsArray.map((s, i) => ({ season: i + 1, rating: s }));
 
-    if (distinctSeasons <= 2) {
+    if (!error && distinctSeasons <= 2) {
       return <p>This show has too few seasons to render a chart</p>;
     }
 
