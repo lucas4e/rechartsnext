@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FetchTVMazeData } from '../lib/FetchTVMazeData';
 import {
   CartesianGrid,
   Line,
@@ -20,8 +21,7 @@ import {
 } from '../models/types';
 
 function App() {
-  const [query, setQuery] = React.useState<string>('');
-  const [error, setError] = React.useState<string>('');
+  const [error, setError] = React.useState<string | null>(null);
   const [showRadar, setShowRadar] = React.useState(false);
   const [data, setData] = React.useState<TVMazeRes>();
   const inputRef = React.useRef<any>('');
@@ -29,23 +29,23 @@ function App() {
   const handleSubmit = React.useCallback(
     async (e: React.SyntheticEvent) => {
       e.preventDefault();
-      try {
-        fetch('http://localhost:3000/api/tvshowsdata', {
-          method: 'POST',
-          body: `https://api.tvmaze.com/singlesearch/shows?q=${inputRef.current.value}&embed=episodes`,
-        })
-          .then(res => {
-            if (res.status === 200) {
-              inputRef.current.value = '';
-              setError('');
-            }
-            return res.json();
-          })
-          .then(data => {
-            setData(data);
-          });
-      } catch (e: any) {
-        setError(e.message);
+
+      const res = await FetchTVMazeData(
+        `https://api.tvmaze.com/singlesearch/shows?q=${inputRef.current.value}&embed=episodes`
+      );
+
+      switch (res.status) {
+        case 200:
+          inputRef.current.value = '';
+          setData(res.parsedBody);
+          setError(null);
+          break;
+        case 404:
+          setError('Could not find series');
+          break;
+        default:
+          setError('Error making request');
+          break;
       }
     },
     [inputRef]
